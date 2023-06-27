@@ -3,7 +3,7 @@ from app import db
 from app.models.board import Board
 
 # create blueprint
-board_bp = Blueprint("board", __name__, url_prefix="/board")
+board_bp = Blueprint("board", __name__, url_prefix="/boards")
 
 # post, get, patch, delete routes
 # Board Routes
