@@ -26,7 +26,6 @@ def add_board():
 
     return {"message": "board successfully added"}, 201
 
-
 # 2. Read one Board
 # a. Get Request for 1 board (/board_id)
 # b. Return 200 OK (json response w/ board information)
@@ -44,7 +43,7 @@ def create_card_for_selected_board(board_id):
     # get request data
     request_body = request.get_json()
     # request_body is a dict
-    
+    request_body["board_id"] = board_id
     # validate board
     board = validate_item(Board, board_id)
     
@@ -103,4 +102,15 @@ def validate_item(model, item_id):
 # a. Get Request for all boards (/)
 # b. Return 200 OK (json response w/ list of board dictionaries)
 # c. err message 404 
+@board_bp.route("", methods=["GET"])
+def get_all_boards():
+    response = []
+    all_boards = Board.query.all() 
+
+    for board in all_boards: 
+        response.append(board.to_dict())
+    
+    return jsonify(response), 200
+
+
 
