@@ -8,15 +8,16 @@ class Card(db.Model):
     board_id = db.Column(db.Integer, db.ForeignKey("board.board_id"), nullable=True)
     board = db.relationship("Board", back_populates="cards")
     
-    # create method to format responses for existing card
+    # create method to turn card object into card dict
     def to_dict(self):
         return {
             "card_id": self.card_id,
             "message": self.message,
-            "likes_count": self.likes_count
+            "likes_count": self.likes_count,
+            "board_id": self.board_id
         }
     
-    # create class method to format responses for new card  
+    # create class method to turn card dict into card object 
     @classmethod
     def from_dict(cls, card_request_data):
         return cls (

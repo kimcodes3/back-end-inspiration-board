@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response, abort
 from app import db
 from app.models.board import Board
+from app.models.card import Card
 
 # create blueprint
 board_bp = Blueprint("board", __name__, url_prefix="/boards")
@@ -15,7 +16,7 @@ board_bp = Blueprint("board", __name__, url_prefix="/boards")
 def add_board():
     response_body = request.get_json()
 
-    try: 
+    try:    
         new_board = Board(title=response_body["title"], owner=response_body["owner"])
     except KeyError:
         return {"details": "Invalid data"}, 400
@@ -36,7 +37,55 @@ def get_one_board(board_id):
 
     return board.to_dict(), 200
 
+# POST /boards/<board_id>/cards
+# Create a card for a selected board
+@board_bp.route("/<board_id>/cards", methods=["POST"])
+def create_card_for_selected_board(board_id):
+    # get request data
+    request_body = request.get_json()
+    # request_body is a dict
+    
+    # validate board
+    board = validate_item(Board, board_id)
+    
+    # validate and create new card
+    if "message" not in request_body or len(request_body["message"]) > 40:
+        return {"details": "Invalid Message"}, 400
+    new_card = Card.from_dict(request_body)
+    
+    # add new card
+    db.session.add(new_card)
+    
+    # attach new card to selected board
+    new_card.board = board
+    
+    # commit changes
+    db.session.commit()
 
+    # return new card dict
+    return new_card.to_dict(), 201
+
+# GET /boards/<board_id>/cards
+# Get all cards from given board
+@board_bp.route("/<board_id>/cards", methods=["GET"])
+def get_all_cards_from_board(board_id):
+    # validate board
+    board = validate_item(Board, board_id)
+
+    # initialize list to hold cards
+    cards_response = []
+    
+    # loop thru each card from given board
+    for card in board.cards:
+        # get card dict
+        card_dict = card.to_dict()
+        # append each card dict to list
+        cards_response.append(card_dict)
+
+    # return updated list
+    return jsonify(cards_response)
+
+# helper function to validate objects
 def validate_item(model, item_id):
     try:
         item_id = int(item_id)
