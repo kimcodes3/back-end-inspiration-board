@@ -23,6 +23,5 @@ class Card(db.Model):
         return cls (
             message = card_request_data["message"],
             likes_count = card_request_data["likes_count"],
-            board_id = card_request_data["board_id"]
         )
 
