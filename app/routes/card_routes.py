@@ -17,7 +17,7 @@ def delete_card(card_id):
     db.session.commit()
     
     # return delete message
-    return {"details": f'Card id {card.card_id} successfully deleted'}
+    return {"details": f'Card id {card.card_id} from board id {card.board_id} successfully deleted'}
 
 # PUT /cards/<card_id>/like
 # Update likes in card
