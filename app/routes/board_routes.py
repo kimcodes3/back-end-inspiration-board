@@ -86,7 +86,7 @@ def create_card_for_selected_board(board_id):
                                 "text": f"Someone just created the card {new_card.message}"}, 
                                 headers = {"Authorization": f"Bearer {slack_api_token}"})
     
-    print(response)
+    print({"response for SLACK API": f"{response}"})
     # add new card
     db.session.add(new_card)
     
