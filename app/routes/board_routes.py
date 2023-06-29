@@ -122,5 +122,14 @@ def validate_item(model, item_id):
 
 
 
+@board_bp.route("/<board_id>", methods=["DELETE"])
+def delete_one_board(board_id): 
+    board = validate_item(Board, board_id)
+
+    db.session.delete(board)
+    db.session.commit()
+
+    return {"message": f"Board owned by {board.owner} has been deleted."}, 200
+    
 
 
