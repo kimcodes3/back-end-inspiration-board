@@ -5,8 +5,8 @@ from app.models.card import Card
 # create blueprint
 card_bp = Blueprint("card_bp", __name__, url_prefix="/cards")
 
-# DELETE /cards/<card_id>
 # Delete a card from given board
+# DELETE /cards/<card_id>
 @card_bp.route("/<card_id>", methods=["DELETE"])
 def delete_card(card_id):
     # validate card
@@ -19,8 +19,8 @@ def delete_card(card_id):
     # return delete message
     return {"details": f'Card id {card.card_id} from board id {card.board_id} successfully deleted'}
 
-# PUT /cards/<card_id>/like
 # Update likes in card
+# PUT /cards/<card_id>/like
 @card_bp.route("/<card_id>/like", methods=["PUT"])
 def update_like(card_id):
     # validate card
