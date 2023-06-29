@@ -78,19 +78,19 @@ def create_card_for_selected_board(board_id):
         return {"details": "Invalid Message"}, 400
     new_card = Card.from_dict(request_body)
     
-    # call Slack API
-    path = "https://slack.com/api/chat.postMessage"
-    slack_api_token = os.environ.get("SLACK_API_TOKEN")
-
-    requests.post(path, data = {"channel": "caka",
-                                "text": f"Someone just created the card {new_card.message}"}, 
-                                headers = {"Authorization": f"Bearer {slack_api_token}"})
-    
     # add new card
     db.session.add(new_card)
     
     # attach new card to selected board
     new_card.board = board
+    
+    # call Slack API
+    path = "https://slack.com/api/chat.postMessage"
+    slack_api_token = os.environ.get("SLACK_API_TOKEN")
+    
+    requests.post(path, data = {"channel": "caka",
+                                "text": f"Someone just created the card {new_card.message} for {new_card.board.title}"}, 
+                                headers = {"Authorization": f"Bearer {slack_api_token}"})
     
     # commit changes
     db.session.commit()
