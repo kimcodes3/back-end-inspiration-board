@@ -51,6 +51,16 @@ def get_all_boards():
     
     return jsonify(response), 200
 
+# delete a board
+@board_bp.route("/<board_id>", methods=["DELETE"])
+def delete_one_board(board_id): 
+    board = validate_item(Board, board_id)
+
+    db.session.delete(board)
+    db.session.commit()
+
+    return {"message": f"Board owned by {board.owner} has been deleted."}, 200
+
 # Create a card for a selected board
 # POST /boards/<board_id>/cards
 @board_bp.route("/<board_id>/cards", methods=["POST"])
@@ -67,6 +77,7 @@ def create_card_for_selected_board(board_id):
         return {"details": "Invalid Message"}, 400
     new_card = Card.from_dict(request_body)
     
+    # call Slack API
     path = "https://slack.com/api/chat.postMessage"
     slack_api_token = os.environ.get("SLACK_API_TOKEN")
 
@@ -119,17 +130,6 @@ def validate_item(model, item_id):
 
     return item
 
-
-
-
-@board_bp.route("/<board_id>", methods=["DELETE"])
-def delete_one_board(board_id): 
-    board = validate_item(Board, board_id)
-
-    db.session.delete(board)
-    db.session.commit()
-
-    return {"message": f"Board owned by {board.owner} has been deleted."}, 200
     
 
 
