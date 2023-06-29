@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, make_response, abort
 from app import db
 from app.models.board import Board
 from app.models.card import Card
+import requests, os
 
 # create blueprint
 board_bp = Blueprint("board", __name__, url_prefix="/boards")
@@ -36,14 +37,28 @@ def get_one_board(board_id):
 
     return board.to_dict(), 200
 
-# POST /boards/<board_id>/cards
+# 3. Read all Board(s)
+# a. Get Request for all boards (/)
+# b. Return 200 OK (json response w/ list of board dictionaries)
+# c. err message 404 
+@board_bp.route("", methods=["GET"])
+def get_all_boards():
+    response = []
+    all_boards = Board.query.all() 
+
+    for board in all_boards: 
+        response.append(board.to_dict())
+    
+    return jsonify(response), 200
+
 # Create a card for a selected board
+# POST /boards/<board_id>/cards
 @board_bp.route("/<board_id>/cards", methods=["POST"])
 def create_card_for_selected_board(board_id):
     # get request data
     request_body = request.get_json()
     # request_body is a dict
-    request_body["board_id"] = board_id
+    
     # validate board
     board = validate_item(Board, board_id)
     
@@ -51,6 +66,13 @@ def create_card_for_selected_board(board_id):
     if "message" not in request_body or len(request_body["message"]) > 40:
         return {"details": "Invalid Message"}, 400
     new_card = Card.from_dict(request_body)
+    
+    path = "https://slack.com/api/chat.postMessage"
+    slack_api_token = os.environ.get("SLACK_API_TOKEN")
+
+    requests.post(path, data = {"channel": "caka",
+                                "text": f"Someone just created the card {new_card.message}"}, 
+                                headers = {"Authorization": f"Bearer {slack_api_token}"})
     
     # add new card
     db.session.add(new_card)
@@ -64,8 +86,8 @@ def create_card_for_selected_board(board_id):
     # return new card dict
     return new_card.to_dict(), 201
 
-# GET /boards/<board_id>/cards
 # Get all cards from given board
+# GET /boards/<board_id>/cards
 @board_bp.route("/<board_id>/cards", methods=["GET"])
 def get_all_cards_from_board(board_id):
     # validate board
@@ -98,19 +120,7 @@ def validate_item(model, item_id):
     return item
 
 
-# 3. Read all Board(s)
-# a. Get Request for all boards (/)
-# b. Return 200 OK (json response w/ list of board dictionaries)
-# c. err message 404 
-@board_bp.route("", methods=["GET"])
-def get_all_boards():
-    response = []
-    all_boards = Board.query.all() 
 
-    for board in all_boards: 
-        response.append(board.to_dict())
-    
-    return jsonify(response), 200
 
 
 
