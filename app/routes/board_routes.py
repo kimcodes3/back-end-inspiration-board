@@ -108,13 +108,33 @@ def get_all_cards_from_board(board_id):
     # initialize list to hold cards
     cards_response = []
     
+    # get sort param value
+    sort_query = request.args.get("sort")
+    
     # loop thru each card from given board
     for card in board.cards:
         # get card dict and append each card dict to list
         cards_response.append(card.to_dict())
     
-    # sort list of card dicts by card_id asc    
-    cards_response = sorted(cards_response, key=lambda d: d['card_id']) 
+    # sort list of card dicts by message asc    
+    if sort_query == "A-Z":
+        cards_response = sorted(cards_response, key=lambda d: d['message'])
+    
+    # sort list of card dicts by message desc    
+    elif sort_query == "Z-A":
+        cards_response = sorted(cards_response, key=lambda d: d['message'], reverse=True) 
+
+    # sort list of card dicts by # of likes asc    
+    elif sort_query == "least_likes":
+        cards_response = sorted(cards_response, key=lambda d: d['likes_count']) 
+    
+    # sort list of card dicts by # of likes desc    
+    elif sort_query == "most_likes":
+        cards_response = sorted(cards_response, key=lambda d: d['likes_count'], reverse=True) 
+    
+    # sort list of card dicts by card_id asc by default  
+    else:
+        cards_response = sorted(cards_response, key=lambda d: d['card_id']) 
 
     # return updated list
     return jsonify(cards_response)
