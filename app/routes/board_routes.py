@@ -110,10 +110,11 @@ def get_all_cards_from_board(board_id):
     
     # loop thru each card from given board
     for card in board.cards:
-        # get card dict
-        card_dict = card.to_dict()
-        # append each card dict to list
-        cards_response.append(card_dict)
+        # get card dict and append each card dict to list
+        cards_response.append(card.to_dict())
+    
+    # sort list of card dicts by card_id asc    
+    cards_response = sorted(cards_response, key=lambda d: d['card_id']) 
 
     # return updated list
     return jsonify(cards_response)

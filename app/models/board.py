@@ -13,5 +13,6 @@ class Board(db.Model):
                 "owner": self.owner
                 }
 
-    
+    # def sort_function(self):
+        # return db.relationship("Card", back_populates="board", lazy=True, order_by="Card.id")
     
