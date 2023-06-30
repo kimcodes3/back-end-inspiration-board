@@ -108,20 +108,20 @@ def get_all_cards_from_board(board_id):
     # initialize list to hold cards
     cards_response = []
     
-    # get sort param value
-    sort_query = request.args.get("sort")
-    
     # loop thru each card from given board
     for card in board.cards:
         # get card dict and append each card dict to list
         cards_response.append(card.to_dict())
     
+    # get sort param value
+    sort_query = request.args.get("sort")
+    
     # sort list of card dicts by message asc    
-    if sort_query == "A-Z":
+    if sort_query == "message A-Z":
         cards_response = sorted(cards_response, key=lambda d: d['message'])
     
     # sort list of card dicts by message desc    
-    elif sort_query == "Z-A":
+    elif sort_query == "message Z-A":
         cards_response = sorted(cards_response, key=lambda d: d['message'], reverse=True) 
 
     # sort list of card dicts by # of likes asc    
