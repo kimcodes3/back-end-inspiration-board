@@ -117,11 +117,11 @@ def get_all_cards_from_board(board_id):
     sort_query = request.args.get("sort")
     
     # sort list of card dicts by message asc    
-    if sort_query == "message A-Z":
+    if sort_query == "message_A-Z":
         cards_response = sorted(cards_response, key=lambda d: d['message'])
     
     # sort list of card dicts by message desc    
-    elif sort_query == "message Z-A":
+    elif sort_query == "message_Z-A":
         cards_response = sorted(cards_response, key=lambda d: d['message'], reverse=True) 
 
     # sort list of card dicts by # of likes asc    
